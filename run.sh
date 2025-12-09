@@ -2,7 +2,7 @@
 
 # --- CONFIGURAZIONE PERCORSI ---
 # Directory dove risiedono i tuoi script Python
-WORK_DIR="/seidenas/users/mtinacci/YOLO-per-dataset"
+WORK_DIR="/seidenas/users/mtinacci/SimAdapt"
 
 # Directory dove sono salvati i dati grezzi (le cartelle output_batch_X)
 RAW_DATA_DIR="/seidenas/datasets"
