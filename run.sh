@@ -40,11 +40,11 @@ echo "--------------------------------------------------------"
 echo "🔗 Linking datasets from $RAW_DATA_DIR..."
 
 # Rimuove vecchi link per pulizia (non cancella i dati veri, solo i link)
-find . -maxdepth 1 -name "output_batch_*" -type l -delete
+find . -maxdepth 1 -name "output_*" -type l -delete
 
 # Crea i nuovi link
 num_batches=0
-for batch_path in "$RAW_DATA_DIR"/output_batch_*; do
+for batch_path in "$RAW_DATA_DIR"/output_*; do
     if [ -d "$batch_path" ]; then
         ln -s "$batch_path" .
         ((num_batches++))
@@ -52,7 +52,7 @@ for batch_path in "$RAW_DATA_DIR"/output_batch_*; do
 done
 
 if [ "$num_batches" -eq 0 ]; then
-    echo "❌ ERRORE: Nessuna cartella 'output_batch_*' trovata in $RAW_DATA_DIR"
+    echo "❌ ERRORE: Nessuna cartella 'output_*' trovata in $RAW_DATA_DIR"
     exit 1
 fi
 
