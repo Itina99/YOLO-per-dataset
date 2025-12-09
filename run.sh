@@ -4,7 +4,7 @@
 # Directory dove risiedono i tuoi script Python
 WORK_DIR="/seidenas/users/mtinacci/YOLO-per-dataset"
 
-# Directory dove sono salvati i dati grezzi (le cartelle output_batch_X)
+# Directory dove sono salvati i dati grezzi (le cartelle output_1, output_2...)
 RAW_DATA_DIR="/seidenas/datasets/SimAdapt"
 
 # Nome del tuo environment conda
@@ -25,9 +25,9 @@ echo "💾 Raw Data: $RAW_DATA_DIR"
 cd "$WORK_DIR"
 
 # 2. Attivazione Conda
-# Nota: su alcuni server serve inizializzare conda nello script bash
 echo "🐍 Activating Conda Environment: $CONDA_ENV_NAME..."
-source "$(conda info --base)/etc/profile.d/conda.sh"
+# Trick per attivare conda negli script shell
+source "$(conda info --base)/etc/profile.d/conda.sh" 2>/dev/null || true
 conda activate "$CONDA_ENV_NAME"
 
 # Check veloce della GPU
@@ -35,18 +35,28 @@ python -c "import torch; print(f'🔥 GPU Detected: {torch.cuda.get_device_name(
 echo "--------------------------------------------------------"
 
 # 3. Creazione Symlink ai dati
-# Questo step evita di copiare GB di dati. Crea dei "puntatori" nella cartella corrente
-# che puntano ai batch originali. Gli script Python leggeranno questi link.
+# TRUCCO FONDAMENTALE: Rinomina output_N -> output_batch_N
 echo "🔗 Linking datasets from $RAW_DATA_DIR..."
 
-# Rimuove vecchi link per pulizia (non cancella i dati veri, solo i link)
+# Rimuove vecchi link per pulizia
 find . -maxdepth 1 -name "output_*" -type l -delete
 
-# Crea i nuovi link
 num_batches=0
+# Cerca cartelle che iniziano con output_
 for batch_path in "$RAW_DATA_DIR"/output_*; do
     if [ -d "$batch_path" ]; then
-        ln -s "$batch_path" .
+        # Prende il nome originale (es. output_1)
+        dirname=$(basename "$batch_path")
+        
+        # Sostituisce la stringa 'output_' con 'output_batch_'
+        # Esempio: output_1 diventa output_batch_1
+        link_name="${dirname/output_/output_batch_}"
+        
+        # Crea il link col NUOVO nome
+        ln -s "$batch_path" "$link_name"
+        
+        # Feedback visuale
+        echo "   Attached: $dirname -> $link_name"
         ((num_batches++))
     fi
 done
@@ -63,6 +73,7 @@ echo "--------------------------------------------------------"
 # 4. Step 1: Analisi Luminosità
 echo "💡 STEP 1: Recovering Brightness Levels..."
 python recover_brightness.py
+
 if [ -f "scene_brightness.json" ]; then
     echo "✅ Brightness map generated."
 else
@@ -74,7 +85,6 @@ echo "--------------------------------------------------------"
 
 # 5. Step 2: Preparazione Dataset YOLO
 echo "🏗️ STEP 2: Preparing YOLO Dataset Structure..."
-# Questo script userà i symlink creati al punto 3
 python prepare_yolo.py
 
 if [ -f "yolo_dataset/data.yaml" ]; then
@@ -88,7 +98,6 @@ echo "--------------------------------------------------------"
 
 # 6. Step 3: Training
 echo "🏋️ STEP 3: Starting YOLO Training..."
-# Il train.py salverà i risultati nella cartella 'vmr_project'
 python train.py
 
 echo "--------------------------------------------------------"
@@ -96,9 +105,8 @@ echo "--------------------------------------------------------"
 # 7. Risultati
 echo "📊 PIPELINE COMPLETED SUCCESSFULLY!"
 echo "   Results are stored in: $WORK_DIR/vmr_project"
-echo "   Model weights: $WORK_DIR/vmr_project/exp_yolo_nano/weights/best.pt"
 
-# Opzionale: Pulizia symlink alla fine (puoi commentarlo se vuoi tenerli)
+# Opzionale: Pulizia symlink alla fine
 # echo "🧹 Cleaning up symlinks..."
 # find . -maxdepth 1 -name "output_batch_*" -type l -delete
 
