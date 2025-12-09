@@ -2,10 +2,10 @@
 
 # --- CONFIGURAZIONE PERCORSI ---
 # Directory dove risiedono i tuoi script Python
-WORK_DIR="/seidenas/users/mtinacci/SimAdapt"
+WORK_DIR="/seidenas/users/mtinacci/YOLO-per-dataset"
 
 # Directory dove sono salvati i dati grezzi (le cartelle output_batch_X)
-RAW_DATA_DIR="/seidenas/datasets"
+RAW_DATA_DIR="/seidenas/datasets/SimAdapt"
 
 # Nome del tuo environment conda
 CONDA_ENV_NAME="vmr_yolo"
