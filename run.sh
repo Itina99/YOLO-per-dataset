@@ -31,8 +31,7 @@ source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$CONDA_ENV_NAME"
 
 # Check veloce della GPU
-python -c "import torch; print(f'🔥 GPU Detected: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NONE'}')"
-
+python -c "import torch; print(f'🔥 GPU Detected: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"NONE\"}')"
 echo "--------------------------------------------------------"
 
 # 3. Creazione Symlink ai dati
