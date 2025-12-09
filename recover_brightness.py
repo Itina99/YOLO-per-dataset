@@ -1,9 +1,20 @@
-import os
-import glob
-import cv2
-import numpy as np
-import json
-from pathlib import Path
+import sys
+print("🐍 Python sta partendo...", file=sys.stderr)
+
+try:
+    import os
+    import glob
+    import cv2
+    import numpy as np
+    import json
+    from pathlib import Path
+    print("📚 Librerie importate correttamente.", file=sys.stderr)
+except ImportError as e:
+    print(f"❌ ERRORE IMPORT LIBRERIE: {e}", file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print(f"❌ ERRORE GENERICO ALL'AVVIO: {e}", file=sys.stderr)
+    sys.exit(1)
 
 DATASET_ROOT = "."  # Dove sono le cartelle output_batch_X
 
